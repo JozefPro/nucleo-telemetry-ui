@@ -4,7 +4,7 @@ KTU T170B008 laboratorinis darbas maketui Nr. 57. JavaFX programa per jSerialCom
 
 ## Paleidimas
 
-Reikia JDK 21 arba naujesnio. Pirmam paleidimui reikia interneto ryšio, kad „Maven Wrapper“ atsisiųstų Maven ir priklausomybes. VS Code atidarykite aplanką **komp-komunikacijos-ld2**, kuriame yra šis failas ir `pom.xml`.
+Reikia JDK 23 arba naujesnio. Su JDK 25 išbandyta „macOS“ sistemoje. Pirmam paleidimui reikia interneto ryšio, kad „Maven Wrapper“ atsisiųstų Maven ir priklausomybes. VS Code atidarykite aplanką **komp-komunikacijos-ld2**, kuriame yra šis failas ir `pom.xml`.
 
 **macOS**
 
@@ -37,8 +37,14 @@ java -version
 
 3. Paleiskite programą, iš sąrašo pasirinkite savo prievadą ir spauskite **Prisijungti**. „Mac“ prievadas gali vadintis `/dev/cu.usbserial-0001`, o „Windows“ sistemoje, pavyzdžiui, `COM4`. Prijungę adapterį jau atidarius langą, spauskite **Atnaujinti**.
 4. Palyginkite naujausią terminalo eilutę su GPS laukeliais. Pavyzdyje `LAT=5453.9492 N` ir `LON=2354.5332 E` atitinka **54.899153° N** ir **23.908887° E**, o EET ir SAT yra **22:37:29** ir **11**. EET rodomas tiesiai iš paketo. Kai LD1 siunčia `GPS=WAIT`, grafike rodomas pagreitis, o GPS laukeliuose lieka brūkšniai.
-5. Pakreipkite maketą ir stebėkite AX, AY bei AZ kreives. X ašis rodo kompiuteryje išmatuotas sekundes nuo nuskaitymo pradžios. Kiekviena gauta pagreičio atskaita tampa vienu tašku kiekvienoje serijoje, įskaitant atskaitas su ta pačia EET sekunde. Matomas 30 sekundžių intervalas.
-6. Spauskite **Atsijungti**. Duomenų srautas sustoja, o terminale atsiranda atsijungimo pranešimas.
+5. Pakreipkite maketą į abi puses per X ir Y ašis. Stebėkite AX, AY bei AZ kreives ir dėžutę skydelyje **Jutiklio padėtis**. Grafikas rodo originalias atskaitas paskutinių 30 sekundžių intervale. Dėžutės judesys išlyginamas pagal pagreitį ir rodo pasvirimą per dvi ašis.
+6. Skydelyje **GPS vieta** pirmas tinkamas GPS paketas sukuria žymeklį ir centruoja žemėlapį. Paslinkite žemėlapį arba pakeiskite mastelį. Naujos koordinatės keičia žymeklio vietą ir išlaiko jūsų pasirinktą žemėlapio vaizdą.
+7. Skaitymo metu perjunkite **Tamsi tema**. Ryšys ir grafiko istorija išlieka. Programa įsimena temos pasirinkimą kitam paleidimui.
+8. Spauskite **Atsijungti**. Duomenų srautas sustoja, o terminale atsiranda atsijungimo pranešimas.
+
+## Žemėlapio plytelės
+
+„Leaflet 1.9.4“ įkeliamas iš projekto išteklių. Žemėlapiui reikia interneto ryšio. Programa HTTPS ryšiu atsisiunčia matomas plyteles su programą identifikuojančia antrašte ir jas talpina vietinėje talpykloje pagal serverio atsakymo antraštes. Žymeklio koordinatės apdorojamos programoje, o plytelių serveriui siunčiami plytelių indeksai. Jei plytelės nepasiekiamos, GPS laukeliai, grafikas ir terminalas veikia toliau. [OpenStreetMap plytelių naudojimo taisyklės](https://operations.osmfoundation.org/policies/tiles/)
 
 ## Atitiktis LD2 aprašo 4–7 žingsniams
 
@@ -55,6 +61,6 @@ java -version
 
 - `serial` atidaro ir skaito nuoseklųjį prievadą atskiroje gijoje.
 - `protocol` surenka CRLF ir LF eilutes, išskaido paketą ir konvertuoja laipsnius su minutėmis į dešimtainius laipsnius. Pietų ir vakarų koordinatės dekoduojamos su minuso ženklu.
-- `ui` atnaujina JavaFX grafiką, GPS laukelius, ryšio būseną ir terminalą.
+- `ui` atnaujina JavaFX grafiką, 3D dėžutę, GPS laukelius bei žemėlapį, ryšio būseną ir terminalą.
 
-Testai apima pateiktą paketą, neigiamą AY, S/W koordinates, dalimis gautą eilutę su perskelta CRLF pabaiga, kelis paketus viename nuskaityme, pasikartojančią EET sekundę ir skaitymo tęsimą po netinkamos eilutės.
+Testai apima pateiktą paketą, neigiamą AY, S/W koordinates, dalimis gautą eilutę su perskelta CRLF pabaiga, kelis paketus viename nuskaityme, pasikartojančią EET sekundę ir skaitymo tęsimą po netinkamos eilutės. Pasvirimo testai tikrina abiejų ašių kryptis, triukšmo slopinimą ir perėjimą ties ±180°.

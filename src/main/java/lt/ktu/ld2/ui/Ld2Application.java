@@ -9,40 +9,51 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lt.ktu.ld2.protocol.PacketStream;
 import lt.ktu.ld2.serial.SerialReader;
 
 import java.util.Locale;
+import java.util.prefs.Preferences;
 
 public final class Ld2Application extends Application {
     private static final String NO_VALUE = "—";
     private static final int TERMINAL_LIMIT = 48_000;
+    private static final double STACKED_BELOW = 840;
+    private static final String DARK_THEME = "darkTheme";
     private static final PseudoClass CONNECTED = PseudoClass.getPseudoClass("connected");
     private static final PseudoClass ERROR = PseudoClass.getPseudoClass("error");
+    private static final PseudoClass DARK = PseudoClass.getPseudoClass("dark");
 
     private enum State { DISCONNECTED, CONNECTING, CONNECTED, DISCONNECTING, ERROR }
 
     private final ComboBox<SerialReader.Port> ports = new ComboBox<>();
     private final Button refresh = new Button("Atnaujinti");
     private final Button connect = new Button("Prisijungti");
+    private final ToggleButton theme = new ToggleButton("Tamsi tema");
     private final Label status = new Label();
     private final TextField latitude = readOnlyField();
     private final TextField longitude = readOnlyField();
     private final TextField eet = readOnlyField();
     private final TextField satellites = readOnlyField();
     private final AccelerationChart chart = new AccelerationChart();
+    private final SensorPosition sensor = new SensorPosition();
     private final TextArea terminal = new TextArea();
+    private final Preferences preferences = Preferences.userNodeForPackage(Ld2Application.class);
 
     private SerialReader reader;
+    private GpsMap gpsMap;
     private State state = State.DISCONNECTED;
 
     public static void main(String[] args) {
@@ -51,17 +62,33 @@ public final class Ld2Application extends Application {
 
     @Override
     public void start(Stage stage) {
-        VBox plot = plotPanel();
-        VBox root = new VBox(14, connectionPanel(), gpsPanel(), plot, terminalPanel());
-        root.getStyleClass().add("workspace");
-        VBox.setVgrow(plot, Priority.ALWAYS);
+        gpsMap = new GpsMap(getHostServices()::showDocument);
+        ScrollPane scroll = new ScrollPane();
+        scroll.getStyleClass().add("dashboard-scroll");
+        scroll.setFitToWidth(true);
+        scroll.setFitToHeight(true);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        GridPane visuals = visualsPanel(scroll);
+        VBox workspace = new VBox(14, connectionPanel(), gpsPanel(), visuals, gpsMap, terminalPanel());
+        workspace.getStyleClass().add("workspace");
+        VBox.setVgrow(visuals, Priority.ALWAYS);
+        scroll.setContent(workspace);
 
-        Scene scene = new Scene(root, 1040, 760);
+        var screen = Screen.getPrimary().getVisualBounds();
+        Scene scene = new Scene(scroll, Math.min(1120, screen.getWidth()),
+                Math.min(925, screen.getHeight() - 45));
         scene.getStylesheets().add(getClass().getResource("ld2.css").toExternalForm());
         stage.setTitle("Kompiuterinės komunikacijos · LD2");
         stage.setMinWidth(660);
         stage.setMinHeight(680);
         stage.setScene(scene);
+
+        theme.setSelected(preferences.getBoolean(DARK_THEME, false));
+        applyTheme(scroll, theme.isSelected());
+        theme.selectedProperty().addListener((observable, previous, dark) -> {
+            applyTheme(scroll, dark);
+            preferences.putBoolean(DARK_THEME, dark);
+        });
         setState(State.DISCONNECTED);
         refreshPorts();
         stage.show();
@@ -72,6 +99,15 @@ public final class Ld2Application extends Application {
         if (reader != null) {
             reader.close();
         }
+        if (gpsMap != null) {
+            gpsMap.close();
+        }
+    }
+
+    private void applyTheme(ScrollPane root, boolean dark) {
+        root.pseudoClassStateChanged(DARK, dark);
+        sensor.setDark(dark);
+        gpsMap.setDark(dark);
     }
 
     private VBox connectionPanel() {
@@ -81,7 +117,8 @@ public final class Ld2Application extends Application {
         portLabel.setLabelFor(ports);
         Region space = new Region();
         HBox.setHgrow(space, Priority.ALWAYS);
-        HBox heading = new HBox(10, portLabel, space, status);
+        theme.getStyleClass().add("theme-toggle");
+        HBox heading = new HBox(8, portLabel, space, theme, status);
         heading.setAlignment(Pos.CENTER_LEFT);
 
         ports.setPromptText("Pasirinkite prievadą");
@@ -143,6 +180,34 @@ public final class Ld2Application extends Application {
         return field;
     }
 
+    private GridPane visualsPanel(ScrollPane scroll) {
+        VBox plot = plotPanel();
+        GridPane grid = new GridPane();
+        grid.setHgap(14);
+        grid.setVgap(14);
+        ColumnConstraints mainColumn = new ColumnConstraints();
+        mainColumn.setHgrow(Priority.ALWAYS);
+        ColumnConstraints sideColumn = new ColumnConstraints(224, 245, 270);
+        grid.getColumnConstraints().setAll(mainColumn, sideColumn);
+        grid.add(plot, 0, 0);
+        grid.add(sensor, 1, 0);
+        GridPane.setVgrow(plot, Priority.ALWAYS);
+        scroll.viewportBoundsProperty().addListener((observable, previous, bounds) -> {
+            double width = bounds.getWidth();
+            boolean stacked = width > 0 && width < STACKED_BELOW;
+            if (stacked != Integer.valueOf(1).equals(GridPane.getRowIndex(sensor))) {
+                GridPane.setColumnIndex(sensor, stacked ? 0 : 1);
+                GridPane.setRowIndex(sensor, stacked ? 1 : 0);
+                if (stacked) {
+                    grid.getColumnConstraints().setAll(mainColumn);
+                } else {
+                    grid.getColumnConstraints().setAll(mainColumn, sideColumn);
+                }
+            }
+        });
+        return grid;
+    }
+
     private VBox plotPanel() {
         Label title = new Label("LIS2DUXS12 pagreitis");
         title.getStyleClass().add("section-title");
@@ -152,7 +217,8 @@ public final class Ld2Application extends Application {
         window.getStyleClass().add("secondary-text");
         HBox heading = new HBox(10, title, space, window);
         heading.setAlignment(Pos.CENTER_LEFT);
-        chart.setMinHeight(210);
+        chart.setMinSize(0, 210);
+        chart.setPrefHeight(268);
         VBox.setVgrow(chart, Priority.ALWAYS);
         VBox panel = new VBox(2, heading, chart);
         panel.getStyleClass().addAll("panel", "plot-panel");
@@ -211,6 +277,7 @@ public final class Ld2Application extends Application {
             public void connected() {
                 Platform.runLater(() -> {
                     chart.reset();
+                    sensor.reset();
                     clearGps();
                     setState(State.CONNECTED);
                     log("[Ryšys] Prisijungta prie " + device + ".");
@@ -250,11 +317,13 @@ public final class Ld2Application extends Application {
 
         var measurement = line.measurement();
         chart.addMeasurement(line.elapsedSeconds(), measurement);
+        sensor.update(measurement);
         measurement.gps().ifPresentOrElse(gps -> {
             latitude.setText(formatCoordinate(gps.latitude(), "N", "S"));
             longitude.setText(formatCoordinate(gps.longitude(), "E", "W"));
             eet.setText(gps.eet());
             satellites.setText(Integer.toString(gps.satellites()));
+            gpsMap.update(gps);
         }, this::clearGps);
     }
 

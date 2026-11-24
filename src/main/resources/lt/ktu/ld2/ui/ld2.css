@@ -1,25 +1,85 @@
 .root {
+    -ld2-background: #f3f5f8;
+    -ld2-panel: #ffffff;
+    -ld2-border: #dce2eb;
+    -ld2-text: #1b2636;
+    -ld2-muted: #506074;
+    -ld2-control: #fdfdfe;
+    -ld2-control-border: #d1d9e4;
+    -ld2-hover: #f0f4fa;
+    -ld2-input: #f5f7fa;
+    -ld2-input-border: #e2e7ef;
+    -ld2-accent: #1465cd;
+    -ld2-accent-hover: #0b53b5;
+    -ld2-focus: #1465cd;
+    -ld2-select: #e6f0ff;
+    -ld2-select-text: #164c93;
+    -ld2-status: #eef1f5;
+    -ld2-error: #fff0ed;
+    -ld2-error-text: #963825;
+    -ld2-plot: #fcfdff;
+    -ld2-grid: #e6ebf2;
+    -ld2-axis: #acb8c8;
+    -ld2-ax: #156acd;
+    -ld2-ay: #c1561c;
+    -ld2-az: #087f66;
     -fx-font-family: "System";
     -fx-font-size: 13px;
-    -fx-accent: #1465cd;
-    -fx-focus-color: #1465cd;
+    -fx-base: -ld2-panel;
+    -fx-background: -ld2-background;
+    -fx-control-inner-background: -ld2-input;
+    -fx-accent: -ld2-accent;
+    -fx-focus-color: -ld2-focus;
     -fx-faint-focus-color: transparent;
-    -fx-text-background-color: #1b2636;
+    -fx-text-background-color: -ld2-text;
+}
+
+.root:dark {
+    -ld2-background: #101721;
+    -ld2-panel: #192330;
+    -ld2-border: #303e51;
+    -ld2-text: #eaf1f9;
+    -ld2-muted: #aab9cd;
+    -ld2-control: #202c3c;
+    -ld2-control-border: #40526a;
+    -ld2-hover: #29394d;
+    -ld2-input: #1b2534;
+    -ld2-input-border: #36445a;
+    -ld2-accent: #2569c2;
+    -ld2-accent-hover: #2e76d1;
+    -ld2-focus: #80b4ff;
+    -ld2-select: #243e62;
+    -ld2-select-text: #bbd8ff;
+    -ld2-status: #253245;
+    -ld2-error: #432927;
+    -ld2-error-text: #ffc1b6;
+    -ld2-plot: #141e2b;
+    -ld2-grid: #29384d;
+    -ld2-axis: #677b95;
+    -ld2-ax: #78b1ff;
+    -ld2-ay: #ffa77b;
+    -ld2-az: #62d5b2;
+}
+
+.dashboard-scroll, .dashboard-scroll > .viewport {
+    -fx-background-color: -ld2-background;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
 }
 
 .workspace {
     -fx-padding: 20 22 20 22;
-    -fx-background-color: #f3f5f8;
+    -fx-background-color: -ld2-background;
 }
 
 .panel {
-    -fx-background-color: white;
+    -fx-background-color: -ld2-panel;
     -fx-background-radius: 13;
-    -fx-border-color: #dce2eb;
+    -fx-border-color: -ld2-border;
     -fx-border-radius: 13;
 }
 
-.toolbar, .terminal-panel {
+.toolbar, .terminal-panel, .map-panel, .sensor-panel {
     -fx-padding: 12 14 12 14;
 }
 
@@ -34,98 +94,126 @@
 .section-title {
     -fx-font-size: 15px;
     -fx-font-weight: bold;
-    -fx-text-fill: #1b2636;
+    -fx-text-fill: -ld2-text;
 }
 
 .field-label, .secondary-text {
     -fx-font-size: 12px;
-    -fx-text-fill: #506074;
+    -fx-text-fill: -ld2-muted;
 }
 
-.button, .combo-box {
+.button, .combo-box, .theme-toggle {
     -fx-min-height: 33;
-    -fx-background-color: #fdfdfe;
+    -fx-background-color: -ld2-control;
     -fx-background-radius: 7;
-    -fx-border-color: #d1d9e4;
+    -fx-border-color: -ld2-control-border;
     -fx-border-radius: 7;
 }
 
-.button {
+.button, .theme-toggle {
     -fx-padding: 5 12 5 12;
-    -fx-text-fill: #1b2636;
+    -fx-text-fill: -ld2-text;
 }
 
-.button:hover, .combo-box:hover {
-    -fx-background-color: #f0f4fa;
+.button:hover, .combo-box:hover, .theme-toggle:hover {
+    -fx-background-color: -ld2-hover;
+}
+
+.theme-toggle {
+    -fx-min-height: 27;
+    -fx-font-size: 12px;
+    -fx-padding: 4 9 4 9;
+}
+
+.theme-toggle:selected {
+    -fx-background-color: -ld2-select;
+    -fx-text-fill: -ld2-select-text;
+}
+
+.combo-box > .list-cell, .combo-box-popup .list-cell {
+    -fx-text-fill: -ld2-text;
+}
+
+.combo-box-popup .list-view, .combo-box-popup .list-cell {
+    -fx-background-color: -ld2-panel;
+}
+
+.combo-box-popup .list-cell:filled:hover, .combo-box-popup .list-cell:filled:selected {
+    -fx-background-color: -ld2-select;
+    -fx-text-fill: -ld2-select-text;
+}
+
+.combo-box .arrow {
+    -fx-background-color: -ld2-muted;
 }
 
 .combo-box:disabled {
     -fx-opacity: 1;
-    -fx-background-color: #f5f7fa;
+    -fx-background-color: -ld2-input;
 }
 
 .combo-box:disabled .list-cell {
     -fx-opacity: 1;
-    -fx-text-fill: #506074;
+    -fx-text-fill: -ld2-muted;
 }
 
 .button.primary {
     -fx-min-width: 105;
-    -fx-background-color: #1465cd;
-    -fx-border-color: #1465cd;
+    -fx-background-color: -ld2-accent;
+    -fx-border-color: -ld2-accent;
     -fx-text-fill: white;
     -fx-font-weight: bold;
 }
 
 .button.primary:hover {
-    -fx-background-color: #0b53b5;
-    -fx-border-color: #0b53b5;
+    -fx-background-color: -ld2-accent-hover;
+    -fx-border-color: -ld2-accent-hover;
 }
 
-.button:focused, .combo-box:focused, .text-input:focused {
-    -fx-border-color: #1465cd;
+.button:focused, .combo-box:focused, .text-input:focused, .theme-toggle:focused {
+    -fx-border-color: -ld2-focus;
 }
 
 .button.primary:focused {
-    -fx-border-color: #153d78;
+    -fx-border-color: -ld2-focus;
 }
 
 .status {
-    -fx-background-color: #eef1f5;
+    -fx-background-color: -ld2-status;
     -fx-background-radius: 20;
     -fx-padding: 4 9 4 9;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
-    -fx-text-fill: #4a5668;
+    -fx-text-fill: -ld2-muted;
 }
 
 .status:connected {
-    -fx-background-color: #e6f0ff;
-    -fx-text-fill: #164c93;
+    -fx-background-color: -ld2-select;
+    -fx-text-fill: -ld2-select-text;
 }
 
 .status:error {
-    -fx-background-color: #fff0ed;
-    -fx-text-fill: #963825;
+    -fx-background-color: -ld2-error;
+    -fx-text-fill: -ld2-error-text;
 }
 
 .gps-value {
     -fx-padding: 5 7 5 7;
-    -fx-background-color: #f5f7fa;
+    -fx-background-color: -ld2-input;
     -fx-background-radius: 6;
-    -fx-border-color: #e2e7ef;
+    -fx-border-color: -ld2-input-border;
     -fx-border-radius: 6;
     -fx-font-size: 15px;
-    -fx-text-fill: #1b2636;
+    -fx-text-fill: -ld2-text;
 }
 
 .terminal {
     -fx-font-family: "Monospaced";
     -fx-font-size: 13px;
-    -fx-text-fill: #24334a;
-    -fx-background-color: #f6f8fb;
+    -fx-text-fill: -ld2-text;
+    -fx-background-color: -ld2-input;
     -fx-background-radius: 7;
-    -fx-border-color: #e2e7ef;
+    -fx-border-color: -ld2-input-border;
     -fx-border-radius: 7;
 }
 
@@ -137,29 +225,64 @@
     -fx-padding: 8 9 8 9;
 }
 
+.sensor-viewport, .map-viewport, .map-status, .map-attribution {
+    -fx-background-color: -ld2-input;
+    -fx-background-radius: 7;
+    -fx-border-color: -ld2-input-border;
+    -fx-border-radius: 7;
+}
+
+.sensor-viewport .label {
+    -fx-padding: 12;
+    -fx-text-alignment: center;
+}
+
+.map-status, .map-attribution {
+    -fx-text-fill: -ld2-text;
+    -fx-padding: 5 8 5 8;
+}
+
+.map-attribution {
+    -fx-font-size: 11px;
+    -fx-padding: 3 6 3 6;
+}
+
+.map-attribution:hover, .map-attribution:focused {
+    -fx-text-fill: -ld2-select-text;
+    -fx-border-color: -ld2-focus;
+}
+
 .chart {
     -fx-padding: 5 6 0 0;
 }
 
 .chart-plot-background {
-    -fx-background-color: #fcfdff;
+    -fx-background-color: -ld2-plot;
 }
 
 .chart-horizontal-grid-lines, .chart-vertical-grid-lines {
-    -fx-stroke: #e6ebf2;
+    -fx-stroke: -ld2-grid;
 }
 
-.chart-horizontal-zero-line, .chart-vertical-zero-line {
-    -fx-stroke: #acb8c8;
+.chart-horizontal-zero-line, .chart-vertical-zero-line, .axis-tick-mark, .axis-minor-tick-mark {
+    -fx-stroke: -ld2-axis;
 }
 
 .axis {
-    -fx-tick-label-fill: #506074;
+    -fx-tick-label-fill: -ld2-muted;
     -fx-tick-label-font-size: 11px;
 }
 
+.axis:bottom {
+    -fx-border-color: -ld2-axis transparent transparent transparent;
+}
+
+.axis:left {
+    -fx-border-color: transparent -ld2-axis transparent transparent;
+}
+
 .axis-label {
-    -fx-text-fill: #334258;
+    -fx-text-fill: -ld2-text;
     -fx-font-size: 12px;
 }
 
@@ -183,26 +306,30 @@
     -fx-background-radius: 4;
 }
 
+.chart-legend-item {
+    -fx-text-fill: -ld2-text;
+}
+
 .default-color0.chart-series-line {
-    -fx-stroke: #156acd;
+    -fx-stroke: -ld2-ax;
 }
 
 .default-color1.chart-series-line {
-    -fx-stroke: #c1561c;
+    -fx-stroke: -ld2-ay;
 }
 
 .default-color2.chart-series-line {
-    -fx-stroke: #087f66;
+    -fx-stroke: -ld2-az;
 }
 
 .default-color0.chart-line-symbol {
-    -fx-background-color: #156acd;
+    -fx-background-color: -ld2-ax;
 }
 
 .default-color1.chart-line-symbol {
-    -fx-background-color: #c1561c;
+    -fx-background-color: -ld2-ay;
 }
 
 .default-color2.chart-line-symbol {
-    -fx-background-color: #087f66;
+    -fx-background-color: -ld2-az;
 }

@@ -9,8 +9,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>21</maven.compiler.release>
-        <javafx.version>21.0.10</javafx.version>
+        <maven.compiler.release>23</maven.compiler.release>
+        <javafx.version>25.0.5</javafx.version>
         <junit.version>5.13.4</junit.version>
     </properties>
 
@@ -19,6 +19,16 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.12.0</version>
         </dependency>
         <dependency>
             <groupId>com.fazecast</groupId>
@@ -52,7 +62,7 @@
                 <configuration>
                     <mainClass>lt.ktu.ld2.ui.Ld2Application</mainClass>
                     <options>
-                        <option>--enable-native-access=javafx.graphics,ALL-UNNAMED</option>
+                        <option>--enable-native-access=javafx.graphics,javafx.web,ALL-UNNAMED</option>
                     </options>
                 </configuration>
             </plugin>
