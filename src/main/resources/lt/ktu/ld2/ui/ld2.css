@@ -1,0 +1,208 @@
+.root {
+    -fx-font-family: "System";
+    -fx-font-size: 13px;
+    -fx-accent: #1465cd;
+    -fx-focus-color: #1465cd;
+    -fx-faint-focus-color: transparent;
+    -fx-text-background-color: #1b2636;
+}
+
+.workspace {
+    -fx-padding: 20 22 20 22;
+    -fx-background-color: #f3f5f8;
+}
+
+.panel {
+    -fx-background-color: white;
+    -fx-background-radius: 13;
+    -fx-border-color: #dce2eb;
+    -fx-border-radius: 13;
+}
+
+.toolbar, .terminal-panel {
+    -fx-padding: 12 14 12 14;
+}
+
+.gps-card {
+    -fx-padding: 10 12 11 12;
+}
+
+.plot-panel {
+    -fx-padding: 13 14 7 14;
+}
+
+.section-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1b2636;
+}
+
+.field-label, .secondary-text {
+    -fx-font-size: 12px;
+    -fx-text-fill: #506074;
+}
+
+.button, .combo-box {
+    -fx-min-height: 33;
+    -fx-background-color: #fdfdfe;
+    -fx-background-radius: 7;
+    -fx-border-color: #d1d9e4;
+    -fx-border-radius: 7;
+}
+
+.button {
+    -fx-padding: 5 12 5 12;
+    -fx-text-fill: #1b2636;
+}
+
+.button:hover, .combo-box:hover {
+    -fx-background-color: #f0f4fa;
+}
+
+.combo-box:disabled {
+    -fx-opacity: 1;
+    -fx-background-color: #f5f7fa;
+}
+
+.combo-box:disabled .list-cell {
+    -fx-opacity: 1;
+    -fx-text-fill: #506074;
+}
+
+.button.primary {
+    -fx-min-width: 105;
+    -fx-background-color: #1465cd;
+    -fx-border-color: #1465cd;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.button.primary:hover {
+    -fx-background-color: #0b53b5;
+    -fx-border-color: #0b53b5;
+}
+
+.button:focused, .combo-box:focused, .text-input:focused {
+    -fx-border-color: #1465cd;
+}
+
+.button.primary:focused {
+    -fx-border-color: #153d78;
+}
+
+.status {
+    -fx-background-color: #eef1f5;
+    -fx-background-radius: 20;
+    -fx-padding: 4 9 4 9;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #4a5668;
+}
+
+.status:connected {
+    -fx-background-color: #e6f0ff;
+    -fx-text-fill: #164c93;
+}
+
+.status:error {
+    -fx-background-color: #fff0ed;
+    -fx-text-fill: #963825;
+}
+
+.gps-value {
+    -fx-padding: 5 7 5 7;
+    -fx-background-color: #f5f7fa;
+    -fx-background-radius: 6;
+    -fx-border-color: #e2e7ef;
+    -fx-border-radius: 6;
+    -fx-font-size: 15px;
+    -fx-text-fill: #1b2636;
+}
+
+.terminal {
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 13px;
+    -fx-text-fill: #24334a;
+    -fx-background-color: #f6f8fb;
+    -fx-background-radius: 7;
+    -fx-border-color: #e2e7ef;
+    -fx-border-radius: 7;
+}
+
+.terminal .scroll-pane, .terminal .viewport, .terminal .content {
+    -fx-background-color: transparent;
+}
+
+.terminal .content {
+    -fx-padding: 8 9 8 9;
+}
+
+.chart {
+    -fx-padding: 5 6 0 0;
+}
+
+.chart-plot-background {
+    -fx-background-color: #fcfdff;
+}
+
+.chart-horizontal-grid-lines, .chart-vertical-grid-lines {
+    -fx-stroke: #e6ebf2;
+}
+
+.chart-horizontal-zero-line, .chart-vertical-zero-line {
+    -fx-stroke: #acb8c8;
+}
+
+.axis {
+    -fx-tick-label-fill: #506074;
+    -fx-tick-label-font-size: 11px;
+}
+
+.axis-label {
+    -fx-text-fill: #334258;
+    -fx-font-size: 12px;
+}
+
+.chart-series-line {
+    -fx-stroke-width: 2;
+}
+
+.chart-line-symbol {
+    -fx-padding: 2 2 2 2;
+    -fx-background-insets: 0;
+}
+
+.chart-legend {
+    -fx-background-color: transparent;
+    -fx-padding: 1 0 3 0;
+    -fx-hgap: 12;
+}
+
+.chart-legend-item-symbol {
+    -fx-padding: 4 4 4 4;
+    -fx-background-radius: 4;
+}
+
+.default-color0.chart-series-line {
+    -fx-stroke: #156acd;
+}
+
+.default-color1.chart-series-line {
+    -fx-stroke: #c1561c;
+}
+
+.default-color2.chart-series-line {
+    -fx-stroke: #087f66;
+}
+
+.default-color0.chart-line-symbol {
+    -fx-background-color: #156acd;
+}
+
+.default-color1.chart-line-symbol {
+    -fx-background-color: #c1561c;
+}
+
+.default-color2.chart-line-symbol {
+    -fx-background-color: #087f66;
+}
