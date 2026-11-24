@@ -37,7 +37,7 @@ java -version
 
 3. Paleiskite programą, iš sąrašo pasirinkite savo prievadą ir spauskite **Prisijungti**. „Mac“ prievadas gali vadintis `/dev/cu.usbserial-0001`, o „Windows“ sistemoje, pavyzdžiui, `COM4`. Prijungę adapterį jau atidarius langą, spauskite **Atnaujinti**.
 4. Palyginkite naujausią terminalo eilutę su GPS laukeliais. Pavyzdyje `LAT=5453.9492 N` ir `LON=2354.5332 E` atitinka **54.899153° N** ir **23.908887° E**, o EET ir SAT yra **22:37:29** ir **11**. EET rodomas tiesiai iš paketo. Kai LD1 siunčia `GPS=WAIT`, grafike rodomas pagreitis, o GPS laukeliuose lieka brūkšniai.
-5. Pakreipkite maketą į abi puses per X ir Y ašis. Stebėkite AX, AY bei AZ kreives ir dėžutę skydelyje **Jutiklio padėtis**. Grafikas rodo originalias atskaitas paskutinių 30 sekundžių intervale. Dėžutės judesys išlyginamas pagal pagreitį ir rodo pasvirimą per dvi ašis.
+5. Skydelyje **Jutiklio padėtis** pasirinkite **Gyvai** ir pakreipkite bei apverskite maketą. Grafikas rodo originalias paskutinių 30 sekundžių pagreičio atskaitas, o modelio pasvirimas išlyginamas kvaternionais. Horizontaliai tempdami pelę pasuksite modelį apie gravitacijos ašį. Režimu **Laisvai** tempkite bet kuria kryptimi, o sukimui ekrano plokštumoje tempkite ties skydelio kraštu. Pelės ratukas keičia mastelį, **Atkurti vaizdą** grąžina pradinį peržiūros kampą ir mastelį.
 6. Skydelyje **GPS vieta** pirmas tinkamas GPS paketas sukuria žymeklį ir centruoja žemėlapį. Paslinkite žemėlapį arba pakeiskite mastelį. Naujos koordinatės keičia žymeklio vietą ir išlaiko jūsų pasirinktą žemėlapio vaizdą.
 7. Skaitymo metu perjunkite **Tamsi tema**. Ryšys ir grafiko istorija išlieka. Programa įsimena temos pasirinkimą kitam paleidimui.
 8. Spauskite **Atsijungti**. Duomenų srautas sustoja, o terminale atsiranda atsijungimo pranešimas.
@@ -61,6 +61,6 @@ java -version
 
 - `serial` atidaro ir skaito nuoseklųjį prievadą atskiroje gijoje.
 - `protocol` surenka CRLF ir LF eilutes, išskaido paketą ir konvertuoja laipsnius su minutėmis į dešimtainius laipsnius. Pietų ir vakarų koordinatės dekoduojamos su minuso ženklu.
-- `ui` atnaujina JavaFX grafiką, 3D dėžutę, GPS laukelius bei žemėlapį, ryšio būseną ir terminalą.
+- `ui` atnaujina JavaFX grafiką, 3D maketą, GPS laukelius bei žemėlapį, ryšio būseną ir terminalą. Maketas įkeliamas iš `models/komp-komun-ld2.glb` programos resurso.
 
-Testai apima pateiktą paketą, neigiamą AY, S/W koordinates, dalimis gautą eilutę su perskelta CRLF pabaiga, kelis paketus viename nuskaityme, pasikartojančią EET sekundę ir skaitymo tęsimą po netinkamos eilutės. Pasvirimo testai tikrina abiejų ašių kryptis, triukšmo slopinimą ir perėjimą ties ±180°.
+Testai apima pateiktą paketą, neigiamą AY, S/W koordinates, dalimis gautą eilutę su perskelta CRLF pabaiga, kelis paketus viename nuskaityme, pasikartojančią EET sekundę ir skaitymo tęsimą po netinkamos eilutės. Orientacijos testai tikrina pasvirimą abiem kryptimis, stabilumą apvertus, kvaternionų interpoliavimą ir sukimą ekrano plokštumoje.

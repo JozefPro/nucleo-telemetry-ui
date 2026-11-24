@@ -1,5 +1,7 @@
 package lt.ktu.ld2.ui;
 
+import javafx.geometry.Point3D;
+import javafx.scene.transform.Rotate;
 import lt.ktu.ld2.protocol.Measurement;
 import org.junit.jupiter.api.Test;
 
@@ -9,43 +11,60 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TiltFilterTest {
-    private final TiltFilter filter = new TiltFilter();
-
     @Test
-    void tiltsInBothDirectionsOnEachAxis() {
-        assertTilt(0.5, 0, Math.sqrt(0.75), 30, 0);
-        assertTilt(-0.5, 0, Math.sqrt(0.75), -30, 0);
-        assertTilt(0, 0.5, Math.sqrt(0.75), 0, 30);
-        assertTilt(0, -0.5, Math.sqrt(0.75), 0, -30);
-    }
+    void mapsAxToModelDepthAndAzToModelX() {
+        var ax = new Measurement(Optional.empty(), 1, 0, 0);
+        var az = new Measurement(Optional.empty(), 0, 0, 1);
 
-    @Test
-    void suppressesSmallNoiseAndSmoothsLargerChanges() {
-        filter.update(sample(0, 0, 1));
-        assertEquals(0, filter.update(sample(0.003, -0.004, 1)).roll());
-        assertEquals(0, filter.update(sample(0, 0.003, 1)).pitch());
-
-        double first = filter.update(sample(0.5, 0, Math.sqrt(0.75))).roll();
-        double second = filter.update(sample(0.5, 0, Math.sqrt(0.75))).roll();
-        assertTrue(first > 0 && first < second && second < 30);
+        assertEquals(Quaternion.IDENTITY, new TiltFilter().update(ax));
+        assertPoint(TiltFilter.UP, new TiltFilter().update(az).rotate(Rotate.X_AXIS));
     }
 
     @Test
-    void crossesThePitchWrapByTheShorterPathAndHoldsWhileInFreeFall() {
-        filter.update(sample(0, 0.01, -1));
-        var inverted = filter.update(sample(0, -0.01, -1));
-        assertTrue(inverted.pitch() > 179 && inverted.pitch() < 181);
-        assertEquals(inverted, filter.update(sample(0, 0, 0)));
+    void alignsGravityForBothSignsOfBothHorizontalAxes() {
+        for (Point3D axis : new Point3D[]{Rotate.X_AXIS, Rotate.Y_AXIS}) {
+            for (double angle : new double[]{-30, 30}) {
+                var gravity = Quaternion.axisAngle(axis, Math.toRadians(angle)).rotate(TiltFilter.UP);
+                assertPoint(TiltFilter.UP, new TiltFilter().update(sample(gravity)).rotate(gravity));
+            }
+        }
     }
 
-    private void assertTilt(double ax, double ay, double az, double roll, double pitch) {
-        filter.reset();
-        var angles = filter.update(sample(ax, ay, az));
-        assertEquals(roll, angles.roll(), 1e-6);
-        assertEquals(pitch, angles.pitch(), 1e-6);
+    @Test
+    void followsAnInversionAndHoldsItThroughNoiseAndFreeFall() {
+        TiltFilter filter = new TiltFilter();
+        for (int degrees = 0; degrees <= 180; degrees += 5) {
+            var gravity = Quaternion.axisAngle(Rotate.X_AXIS, Math.toRadians(degrees)).rotate(TiltFilter.UP);
+            filter.update(sample(gravity));
+        }
+        Point3D inverted = TiltFilter.UP.multiply(-1);
+        Quaternion pose = Quaternion.IDENTITY;
+        for (int i = 0; i < 16; i++) {
+            pose = filter.update(sample(inverted));
+        }
+        assertTrue(pose.rotate(inverted).distance(TiltFilter.UP) < 0.006);
+        assertPoint(Rotate.X_AXIS, pose.rotate(Rotate.X_AXIS));
+        assertEquals(pose, filter.update(sample(new Point3D(0.001, 0, 1))));
+        assertEquals(pose, filter.update(sample(Point3D.ZERO)));
     }
 
-    private static Measurement sample(double ax, double ay, double az) {
-        return new Measurement(Optional.empty(), ax, ay, az);
+    @Test
+    void slerpKeepsHalfOfAFullFlipAndArcballCanTwistInTheScreenPlane() {
+        var flip = Quaternion.axisAngle(Rotate.X_AXIS, Math.PI);
+        assertPoint(Rotate.Y_AXIS, Quaternion.IDENTITY.interpolate(flip, 0.5).rotate(TiltFilter.UP));
+
+        var start = SensorPosition.arcball(1, 0, 1);
+        var end = SensorPosition.arcball(0, 1, 1);
+        var twist = Quaternion.between(start, end);
+        assertPoint(Rotate.Y_AXIS, twist.rotate(Rotate.X_AXIS));
+        assertPoint(TiltFilter.UP, twist.rotate(TiltFilter.UP));
+    }
+
+    private static Measurement sample(Point3D gravity) {
+        return new Measurement(Optional.empty(), -gravity.getZ(), -gravity.getY(), gravity.getX());
+    }
+
+    private static void assertPoint(Point3D expected, Point3D actual) {
+        assertEquals(0, expected.distance(actual), 1e-8);
     }
 }

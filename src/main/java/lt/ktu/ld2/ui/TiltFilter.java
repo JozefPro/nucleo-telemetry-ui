@@ -1,37 +1,40 @@
 package lt.ktu.ld2.ui;
 
+import javafx.geometry.Point3D;
 import lt.ktu.ld2.protocol.Measurement;
 
 final class TiltFilter {
-    record Angles(double roll, double pitch) {}
+    static final Point3D UP = new Point3D(0, 0, -1);
+    private static final double DEADBAND = Math.cos(Math.toRadians(0.3));
+    private Point3D smoothed;
+    private Point3D lastDirection = UP;
+    private Quaternion tilt = Quaternion.IDENTITY;
 
-    private static final double WEIGHT = 0.46;
-    private static final double DEADBAND_DEGREES = 0.4;
-    private Angles angles;
-
-    Angles update(Measurement measurement) {
-        double yz = Math.hypot(measurement.ay(), measurement.az());
-        double magnitude = Math.hypot(measurement.ax(), yz);
-        if (magnitude < 0.15 || !Double.isFinite(magnitude)) {
-            return angles != null ? angles : new Angles(0, 0);
+    Quaternion update(Measurement measurement) {
+        Point3D direction = new Point3D(measurement.az(), -measurement.ay(), -measurement.ax());
+        double magnitude = direction.magnitude();
+        if (!Double.isFinite(magnitude) || magnitude < 0.15) {
+            return tilt;
+        }
+        direction = direction.multiply(1 / magnitude);
+        smoothed = smoothed == null ? direction
+                : smoothed.multiply(0.42).add(direction.multiply(0.58)).normalize();
+        if (smoothed.dotProduct(lastDirection) >= DEADBAND) {
+            return tilt;
         }
 
-        double roll = Math.toDegrees(Math.atan2(measurement.ax(), yz));
-        // When X is nearly vertical, Y and Z provide no reliable pitch.
-        double pitch = yz < 0.08 * magnitude
-                ? (angles != null ? angles.pitch() : 0)
-                : Math.toDegrees(Math.atan2(measurement.ay(), measurement.az()));
-        angles = angles == null ? new Angles(roll, pitch) : new Angles(
-                smooth(angles.roll(), roll), smooth(angles.pitch(), pitch));
-        return angles;
+        // Carry the last fold axis through the inverted pose, where the
+        // shortest rotation from upright otherwise depends on tiny axis noise.
+        tilt = smoothed.dotProduct(UP) < -0.96
+                ? tilt.multiply(Quaternion.between(smoothed, lastDirection)).normalized()
+                : Quaternion.between(smoothed, UP);
+        lastDirection = smoothed;
+        return tilt;
     }
 
     void reset() {
-        angles = null;
-    }
-
-    private static double smooth(double current, double target) {
-        double delta = Math.IEEEremainder(target - current, 360);
-        return Math.abs(delta) < DEADBAND_DEGREES ? current : current + WEIGHT * delta;
+        smoothed = null;
+        lastDirection = UP;
+        tilt = Quaternion.IDENTITY;
     }
 }

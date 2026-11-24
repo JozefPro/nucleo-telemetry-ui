@@ -333,3 +333,27 @@
 .default-color2.chart-line-symbol {
     -fx-background-color: -ld2-az;
 }
+
+.model-control {
+    -fx-background-color: -ld2-control;
+    -fx-background-radius: 7;
+    -fx-border-color: -ld2-control-border;
+    -fx-border-radius: 7;
+    -fx-font-size: 11px;
+    -fx-min-height: 25;
+    -fx-padding: 4 6;
+    -fx-text-fill: -ld2-text;
+}
+
+.model-control:hover {
+    -fx-background-color: -ld2-hover;
+}
+
+.model-control:selected {
+    -fx-background-color: -ld2-select;
+    -fx-text-fill: -ld2-select-text;
+}
+
+.model-control:focused {
+    -fx-border-color: -ld2-focus;
+}
