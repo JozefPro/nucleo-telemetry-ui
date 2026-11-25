@@ -12,12 +12,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TiltFilterTest {
     @Test
-    void mapsAxToModelDepthAndAzToModelX() {
+    void swapsHorizontalAxesWithAyInvertedAndKeepsAzOnTheLogoFace() {
         var ax = new Measurement(Optional.empty(), 1, 0, 0);
+        var ay = new Measurement(Optional.empty(), 0, 1, 0);
         var az = new Measurement(Optional.empty(), 0, 0, 1);
 
-        assertEquals(Quaternion.IDENTITY, new TiltFilter().update(ax));
-        assertPoint(TiltFilter.UP, new TiltFilter().update(az).rotate(Rotate.X_AXIS));
+        assertEquals(Quaternion.IDENTITY, new TiltFilter().update(az));
+        assertPoint(TiltFilter.UP, new TiltFilter().update(ax).rotate(Rotate.Y_AXIS.multiply(-1)));
+        assertPoint(TiltFilter.UP, new TiltFilter().update(ay).rotate(Rotate.X_AXIS.multiply(-1)));
+    }
+
+    @Test
+    void keepsLogoFaceUpForMeasuredTabletopPose() {
+        var tabletop = new Measurement(Optional.empty(), 0.015, -0.007, 0.984);
+        var tilt = new TiltFilter().update(tabletop);
+
+        assertTrue(tilt.rotate(TiltFilter.UP).angle(TiltFilter.UP) < 2);
     }
 
     @Test
@@ -61,7 +71,7 @@ class TiltFilterTest {
     }
 
     private static Measurement sample(Point3D gravity) {
-        return new Measurement(Optional.empty(), -gravity.getZ(), -gravity.getY(), gravity.getX());
+        return new Measurement(Optional.empty(), -gravity.getY(), -gravity.getX(), -gravity.getZ());
     }
 
     private static void assertPoint(Point3D expected, Point3D actual) {

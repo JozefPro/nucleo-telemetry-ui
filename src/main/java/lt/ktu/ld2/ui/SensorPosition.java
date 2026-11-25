@@ -30,8 +30,8 @@ import lt.ktu.ld2.protocol.Measurement;
 import java.io.IOException;
 
 final class SensorPosition extends VBox {
-    private static final Quaternion DEFAULT_VIEW = Quaternion.axisAngle(Rotate.Y_AXIS, Math.toRadians(-31))
-            .multiply(Quaternion.axisAngle(Rotate.X_AXIS, Math.toRadians(36)));
+    private static final Quaternion DEFAULT_VIEW = Quaternion.axisAngle(Rotate.Y_AXIS, Math.toRadians(-1))
+            .multiply(Quaternion.axisAngle(Rotate.X_AXIS, Math.toRadians(-90)));
     private static final double DEFAULT_DISTANCE = 345;
     private final TiltFilter filter = new TiltFilter();
     private final Affine orientation = new Affine();

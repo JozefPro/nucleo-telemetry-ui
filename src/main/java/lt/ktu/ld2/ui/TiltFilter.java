@@ -11,7 +11,8 @@ final class TiltFilter {
     private Quaternion tilt = Quaternion.IDENTITY;
 
     Quaternion update(Measurement measurement) {
-        Point3D direction = new Point3D(measurement.az(), -measurement.ay(), -measurement.ax());
+        // Positive AZ points out of the logo face, which is -Z in the model.
+        Point3D direction = new Point3D(-measurement.ay(), -measurement.ax(), -measurement.az());
         double magnitude = direction.magnitude();
         if (!Double.isFinite(magnitude) || magnitude < 0.15) {
             return tilt;
